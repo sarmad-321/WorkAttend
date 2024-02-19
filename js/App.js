@@ -68,60 +68,60 @@ import Welcome from './components/Welcome';
 import CompanyRegister from './components/CompanyRegister';
 import {NativeBaseProvider} from 'native-base';
 
-// import CompanyRegisterTxt from "./components/CompanyRegisterTxt";
-// import Login from "./components/Login";
-// import Dashboard from "./components/Dashboard";
+import CompanyRegisterTxt from './components/CompanyRegisterTxt';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 // import History from "./components/HistoryPunch";
-// import Profile from "./components/Profile";
+import Profile from './components/Profile';
 // import Contact from "./components/Contact";
 // import Settings from "./components/Settings";
-// import SideBar from "./components/Sidebar";
+import SideBar from './components/Sidebar';
 // import GeoFencing from "./components/GeoFencing";
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
-// const DrawerNavigator = () => {
-//   return (
-//     <Drawer.Navigator
-//       initialRouteName="Dashboard"
-//       drawerPosition="left"
-//       drawerContent={(props) => <SideBar {...props} />}
-//       screenOptions={{
-//         activeTintColor: "#e91e63",
-//         gestureEnabled: false,
-//       }}
-//     >
-//       <Drawer.Screen name="Dashboard" component={Dashboard} />
-//       <Drawer.Screen name="GeoFencing" component={GeoFencing} />
-//       <Drawer.Screen name="History" component={History} />
-//       <Drawer.Screen name="Profile" component={Profile} />
-//       <Drawer.Screen name="Contact" component={Contact} />
-//       <Drawer.Screen name="Settings" component={Settings} />
-//     </Drawer.Navigator>
-//   );
-// };
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Dashboard"
+      drawerPosition="left"
+      drawerContent={props => <SideBar {...props} />}
+      screenOptions={{
+        activeTintColor: '#e91e63',
+        gestureEnabled: false,
+        headerShown: false,
+      }}>
+      <Drawer.Screen name="Dashboard" component={Dashboard} />
+      {/* <Drawer.Screen name="GeoFencing" component={GeoFencing} />
+      <Drawer.Screen name="History" component={History} /> */}
+      <Drawer.Screen name="Profile" component={Profile} />
+      {/* <Drawer.Screen name="Contact" component={Contact} />
+      <Drawer.Screen name="Settings" component={Settings} /> */}
+    </Drawer.Navigator>
+  );
+};
 
 const AppNavigator = () => {
   return (
-    <NativeBaseProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Welcome"
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="Welcome" component={Welcome} />
-          <Stack.Screen name="CompanyRegister" component={CompanyRegister} />
-          {/* <Stack.Screen
+    // <NativeBaseProvider>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Welcome"
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="CompanyRegister" component={CompanyRegister} />
+        <Stack.Screen
           name="CompanyRegisterTxt"
           component={CompanyRegisterTxt}
-          />
-          <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Drawer" component={DrawerNavigator} /> */}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </NativeBaseProvider>
+        />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Drawer" component={DrawerNavigator} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    // </NativeBaseProvider>
   );
 };
 

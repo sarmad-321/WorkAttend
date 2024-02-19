@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-import {StackActions, NavigationAction} from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 
 import Swiper from '../../../js/components/Swiper';
 
@@ -28,14 +28,17 @@ export default class Screen extends Component {
     if (realmAppUser.length > 0) {
       isOldUser = realmAppUser[0].isOldUser;
     }
-
+    console.log(isOldUser, 'old user?');
     if (isOldUser) {
       // const navigateAction = StackActions.reset({
       //   index: 0,
       //   actions: [NavigationActions.navigate({routeName: 'Drawer'})],
       // });
-
-      this.props.navigation.navigate('Drawer');
+      const navigateAction = CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Drawer'}],
+      });
+      this.props.navigation.dispatch(navigateAction);
     }
   }
 

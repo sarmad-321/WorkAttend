@@ -4,8 +4,8 @@ import {View, Dimensions, Text, Image, TouchableOpacity} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-// import * as Animatable from 'react-native-animatable';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Animatable from 'react-native-animatable';
 import {
   Header,
   Left,
@@ -170,7 +170,7 @@ export default class CompanyRegister extends Component {
   render() {
     return (
       <Container style={styles.container}>
-        {/* <Header
+        <Header
           iosStatusbar="light-content"
           androidStatusBarColor="rgba(0,184,108,1)"
           style={styles.header}>
@@ -180,8 +180,8 @@ export default class CompanyRegister extends Component {
               Scan company QR Code
             </Title>
           </Body>
-        </Header> */}
-        {/* 
+        </Header>
+
         <QRCodeScanner
           showMarker
           onRead={this.onSuccess.bind(this)}
@@ -206,8 +206,8 @@ export default class CompanyRegister extends Component {
 
                 <View style={styles.rectangle}>
                   <Icon
-                    name="ios-qr-scanner"
-                    size={SCREEN_WIDTH * 0.65}
+                    name="scan-outline"
+                    size={SCREEN_WIDTH * 0.6}
                     color={iconScanColor}
                   />
                   <Animatable.View
@@ -282,7 +282,7 @@ export default class CompanyRegister extends Component {
               </View>
             </View>
           }
-        /> */}
+        />
       </Container>
     );
   }

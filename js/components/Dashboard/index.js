@@ -41,6 +41,7 @@ import {
 } from 'native-base';
 import MapView, {
   Polygon,
+  Marker,
   Callout,
   PROVIDER_GOOGLE,
   PROVIDER_DEFAULT,
@@ -59,7 +60,7 @@ import realm from '../../../js/realm';
 import style from '../Sidebar/style';
 import DeviceInfo from 'react-native-device-info';
 import {getAttributes} from '../../services/getAttributes';
-
+import LocationPermissions from '../LocationPermissions';
 const done = require('../../../img/done.gif');
 const error = require('../../../img/error.gif');
 const menu = require('../../../img/menu.png');
@@ -627,7 +628,6 @@ else
   }
 
   getLocation() {
-    Alert.alert('is it working?');
     if (this.state._isMounted) {
       let realmUser = realm.objects('employee');
       let token = '';
@@ -867,6 +867,13 @@ else
     });
   }
 
+  getUserLocation() {
+    if (this.watchID) {
+      navigator.geolocation.clearWatch(this.watchID);
+    }
+    this.initStateMap();
+  }
+
   onFocusFunction() {
     this.setState(
       {
@@ -918,22 +925,23 @@ isLoading: false,}, () => {
       this.focusListener.remove();
       this.state._isMounted = false;
     }
+    if (this.watchID) {
+      navigator.geolocation.clearWatch(this.watchID);
+    }
   }
 
   initStateMap() {
-    Alert.alert('here????');
     this.setState({_isMounted: true});
 
     // alert('componentDidMount' + this.state._isMounted)
     if (this.state._isMounted) {
-      Alert.alert('im called');
-
       var LATITUDE_DELTA = 0.00333266201122472694;
       var LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
       // console.log(':)');
       navigator.geolocation.getCurrentPosition(
         position => {
           // alert('lat'+position.coords.latitude+'long'+position.coords.longitude);
+          console.log(JSON.stringify(position));
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -953,9 +961,7 @@ isLoading: false,}, () => {
           this.setRegion(region);
         },
         error => alert(error.message),
-        Platform.OS === 'android'
-          ? {}
-          : {enableHighAccuracy: true, timeout: 20000, maximumAge: 10000},
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 10000},
       );
 
       //alert('before');
@@ -964,7 +970,11 @@ isLoading: false,}, () => {
           // Create the object to update this.state.mapRegion through the onRegionChange function
 
           // alert('inside');
-
+          console.log(
+            position.coords.latitude,
+            position.coords.longitude,
+            'watch',
+          );
           let region = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -977,21 +987,19 @@ isLoading: false,}, () => {
         },
         error => this.setState({error: error.message}),
         //  {enableHighAccuracy: true, timeout: 20000, maximumAge: 0}//1000}
-        Platform.OS === 'android'
-          ? {}
-          : {
-              enableHighAccuracy: true,
-              timeout: 1000,
-              maximumAge: 1000,
-              distanceFilter: 5,
-            },
+        {
+          enableHighAccuracy: true,
+          timeout: 1000,
+          maximumAge: 1000,
+          distanceFilter: 5,
+        },
       );
     }
   }
 
   onRegionChange(region, lastLat, lastLong) {
     // alert('i m valled' +JSON.stringify(region));
-
+    console.log(lastLat, 'Last Lat');
     if (this.state._isMounted) {
       //  alert('lang' + lastLat + lastLong)
       this.setState({
@@ -1232,13 +1240,21 @@ isLoading: false,}, () => {
       isQuestionnaire: false,
     });
   }
+
+  checkNotNull(value1, value2) {
+    if (value1 && value2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   render() {
     var that = this;
-    console.log(this.state.lastLat, 'last lat long');
-
     return (
       <Container style={styles.container}>
         <View>
+          <LocationPermissions initLocation={() => this.getUserLocation()} />
           <MapView
             provider={Platform.OS == 'ios' ? PROVIDER_DEFAULT : PROVIDER_GOOGLE}
             ref={map => {
@@ -1249,14 +1265,14 @@ isLoading: false,}, () => {
             style={{
               height: this.state.height,
             }}
-            showsUserLocation={true}
+            showsUserLocation={false}
             followsUserLocation={true}
             showsMyLocationButton={false}
             onMapReady={this.onMapReady}
             zoomEnabled={true}>
             {this.state.geoFenceCoords != undefined &&
               this.state.geoFenceCoords.map((coords, i) => (
-                <MapView.Polygon
+                <Polygon
                   key={i}
                   coordinates={coords}
                   strokeColor="rgb(84,181,64)"
@@ -1265,40 +1281,38 @@ isLoading: false,}, () => {
                   onPress={() => this.onPress()}
                 />
               ))}
-            {this.state.lastLat != null && this.state.lastLong != null && (
-              <MapView.Marker
+            {this.checkNotNull(this.state.lastLat, this.state.lastLong) ? (
+              <Marker
                 coordinate={{
                   latitude: this.state.lastLat,
                   longitude: this.state.lastLong,
-                }}
-
-                //   title="You are here!"
-                //  description="Greetings!"
-              >
-                {/*   <Image source={marker} style={{width: 42, height: 42}}/>*/}
+                }}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                   <View style={styles.calloutViewPin}>
-                    {/*<Icon name='ios-radio-button-off' style={styles.iconLoc}/>*/}
-                    {this.state.lastLat != null &&
-                      this.state.lastLong != null && (
-                        <Text style={styles.textLocPin}>
-                          Your current location
-                        </Text>
-                      )}
+                    {this.state.lastLat ? (
+                      <Text style={styles.textLocPin}>
+                        Your current location
+                      </Text>
+                    ) : null}
                   </View>
                   <Image
                     source={marker}
                     style={{width: 20, height: 30, paddingTop: 0, marginTop: 0}}
                   />
                 </View>
-              </MapView.Marker>
-            )}
+              </Marker>
+            ) : null}
 
-            {/* {this.state.lastLat!=null && this.state.lastLong!=null &&  <MapView.Marker
-						coordinate={{latitude:this.state.lastLat, longitude:this.state.lastLong}}
-						pinColor="red"
-            title="You are here!"
-      />}*/}
+            {/* {this.state.lastLat != null && this.state.lastLong != null && (
+              <Marker
+                coordinate={{
+                  latitude: this.state.lastLat,
+                  longitude: this.state.lastLong,
+                }}
+                pinColor="red"
+                title="You are here!"
+              />
+            )} */}
           </MapView>
           <Callout>
             <View style={styles.containerCallout}>
@@ -1335,8 +1349,8 @@ isLoading: false,}, () => {
                     <Text>My Pin Location</Text>
                     <Text style={styles.textLatLong}>
                       {' '}
-                      {'\n'}[{this.state.lastLat.toString().substring(0, 10)},
-                      {this.state.lastLong.toString().substring(0, 10)}]
+                      {'\n'}[{String(this.state.lastLat).substring(0, 10)},
+                      {String(this.state.lastLong).substring(0, 10)}]
                     </Text>
                   </Text>
                 )}

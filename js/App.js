@@ -77,6 +77,8 @@ import Profile from './components/Profile';
 // import Settings from "./components/Settings";
 import SideBar from './components/Sidebar';
 // import GeoFencing from "./components/GeoFencing";
+import Geolocation from '@react-native-community/geolocation';
+navigator.geolocation = Geolocation;
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();

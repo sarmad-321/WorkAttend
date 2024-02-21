@@ -11,8 +11,8 @@ import {
   TouchableHighlight,
   Modal,
   Alert,
-  ListView,
 } from 'react-native';
+import ListView from 'deprecated-react-native-listview';
 import styles from '../../../js/themes/styles';
 import {
   Header,
@@ -225,13 +225,15 @@ export default class History extends Component {
   };
 
   componentDidMount() {
-    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+    this.focusListener = this.props.navigation.addListener('focus', () => {
       this.onFocusFunction();
     });
   }
 
   componentWillUnmount() {
-    this.focusListener.remove();
+    if (this.focusListener) {
+      this.focusListener();
+    }
   }
   /******* component bonding */
 
@@ -572,8 +574,7 @@ if(item.location == selectedLoc)
   render() {
     return (
       <Container
-        style={styles.container}
-        style={{backgroundColor: 'rgb(233,234,241)'}}>
+        style={[styles.container, {backgroundColor: 'rgb(233,234,241)'}]}>
         <Header
           iosStatusbar="menu-outline"
           androidStatusBarColor="rgba(0,184,108,1)"

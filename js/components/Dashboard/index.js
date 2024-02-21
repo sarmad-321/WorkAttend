@@ -24,6 +24,7 @@ import {
   PermissionsAndroid,
   Platform,
   Modal,
+  Linking,
 } from 'react-native';
 import styles from '../../../js/themes/styles';
 import {
@@ -61,6 +62,7 @@ import style from '../Sidebar/style';
 import DeviceInfo from 'react-native-device-info';
 import {getAttributes} from '../../services/getAttributes';
 import LocationPermissions from '../LocationPermissions';
+import LocationResetButton from './LocationResetButton';
 const done = require('../../../img/done.gif');
 const error = require('../../../img/error.gif');
 const menu = require('../../../img/menu.png');
@@ -138,6 +140,7 @@ export default class Dashboard extends Component {
       selectedPunchAttValue: '',
       currentPunchType: 0,
       isCollectDaily: false,
+      isLocationFetched: false,
     };
 
     //isOnSite: isOnSite,
@@ -710,6 +713,13 @@ else
         console.log('You can use the location');
       } else {
         console.log('Location permission denied');
+        setTimeout(() => {
+          Alert.alert(
+            'Location Services Disabled',
+            'Please enable location services to use this app.',
+            [{text: 'OK', onPress: () => Linking.openSettings()}],
+          );
+        }, 2000);
       }
     } catch (err) {
       console.warn(err);
@@ -823,6 +833,19 @@ else
     var realmPunchTypeCurrent = realm.objects('punchInRecord');
     //automatic reset in if nnot clock out in last 24 hours
     //if(realmPunchTypeCurrent.length>0)
+
+    this.locationFetchInterval = setInterval(() => {
+      // Check if location is fetched
+      this.initStateMap();
+      if (this.state.isLocationFetched) {
+        // If location is fetched, clear interval and return
+        clearInterval(this.locationFetchInterval);
+        return;
+      }
+
+      // Code to fetch location...
+    }, 5000); // Interval time in milliseconds
+
     if (realmPunchTypeCurrent.length > 0) {
       const yourDateMilliseconds =
         realmPunchTypeCurrent[0].punchDateTime.getTime();
@@ -868,6 +891,7 @@ else
   }
 
   getUserLocation() {
+    console.log('get user location called ?');
     if (this.watchID) {
       navigator.geolocation.clearWatch(this.watchID);
     }
@@ -921,8 +945,13 @@ isLoading: false,}, () => {
 
   componentWillUnmount() {
     //alert('unmounntr');
-    if (this.focusListener.remove) {
-      this.focusListener.remove();
+    console.log('unmount called?');
+    if (this.locationFetchInterval) {
+      clearInterval(this.locationFetchInterval);
+    }
+
+    if (this.focusListener) {
+      this.focusListener();
       this.state._isMounted = false;
     }
     if (this.watchID) {
@@ -930,7 +959,19 @@ isLoading: false,}, () => {
     }
   }
 
-  initStateMap() {
+  async initStateMap() {
+    console.log('Init function called');
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'Location Permission',
+        message: 'This app needs access to your location',
+      },
+    );
+
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      return;
+    }
     this.setState({_isMounted: true});
 
     // alert('componentDidMount' + this.state._isMounted)
@@ -941,7 +982,10 @@ isLoading: false,}, () => {
       navigator.geolocation.getCurrentPosition(
         position => {
           // alert('lat'+position.coords.latitude+'long'+position.coords.longitude);
-          console.log(JSON.stringify(position));
+          this.setState({
+            isLocationFetched: true,
+          });
+          console.log(JSON.stringify(position), 'Current Position');
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -959,9 +1003,10 @@ isLoading: false,}, () => {
             longitudeDelta: LONGITUDE_DELTA,
           };
           this.setRegion(region);
+          this.onRegionChange(region, region.latitude, region.longitude);
         },
-        error => alert(error.message),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 10000},
+        error => console.log(error.message),
+        {enableHighAccuracy: false, timeout: 20000, maximumAge: 10000},
       );
 
       //alert('before');
@@ -970,11 +1015,10 @@ isLoading: false,}, () => {
           // Create the object to update this.state.mapRegion through the onRegionChange function
 
           // alert('inside');
-          console.log(
-            position.coords.latitude,
-            position.coords.longitude,
-            'watch',
-          );
+
+          this.setState({
+            isLocationFetched: true,
+          });
           let region = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -999,7 +1043,6 @@ isLoading: false,}, () => {
 
   onRegionChange(region, lastLat, lastLong) {
     // alert('i m valled' +JSON.stringify(region));
-    console.log(lastLat, 'Last Lat');
     if (this.state._isMounted) {
       //  alert('lang' + lastLat + lastLong)
       this.setState({
@@ -1253,6 +1296,7 @@ isLoading: false,}, () => {
     var that = this;
     return (
       <Container style={styles.container}>
+        <LocationResetButton onPress={() => this.getUserLocation()} />
         <View>
           <LocationPermissions initLocation={() => this.getUserLocation()} />
           <MapView
@@ -1265,7 +1309,7 @@ isLoading: false,}, () => {
             style={{
               height: this.state.height,
             }}
-            showsUserLocation={false}
+            showsUserLocation={true}
             followsUserLocation={true}
             showsMyLocationButton={false}
             onMapReady={this.onMapReady}
@@ -1302,7 +1346,6 @@ isLoading: false,}, () => {
                 </View>
               </Marker>
             ) : null}
-
             {/* {this.state.lastLat != null && this.state.lastLong != null && (
               <Marker
                 coordinate={{

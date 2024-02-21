@@ -38,7 +38,8 @@ import {
 } from 'native-base';
 import realm from '../../../js/realm';
 import {changePassword} from '../../../js/services/changePassword';
-import {NavigationActions, StackActions} from 'react-navigation';
+import {CommonActions} from '@react-navigation/native';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import {getAppDetail} from '../../../js/services/getAppDetail';
 const menu = require('../../../img/menu.png');
@@ -120,11 +121,11 @@ export default class Settings extends Component {
           newPassConfirm: '',
         });
         Alert.alert('Password Change', 'your password is changed sucessfully!');
-        const navigateAction = StackActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({routeName: 'Login'})],
-        });
 
+        const navigateAction = CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Login'}],
+        });
         this.props.navigation.dispatch(navigateAction);
       } else {
         alert('Something went wrong. Unable to log out.');
@@ -212,11 +213,11 @@ export default class Settings extends Component {
             realm.deleteAll();
           });
           //token expire
-          const navigateAction = StackActions.reset({
-            index: 0,
-            actions: [NavigationActions.navigate({routeName: 'Login'})],
-          });
 
+          const navigateAction = CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Login'}],
+          });
           this.props.navigation.dispatch(navigateAction);
         }
 
@@ -271,11 +272,11 @@ export default class Settings extends Component {
                 'Password Change',
                 'your password is changed sucessfully!',
               );
-              const navigateAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({routeName: 'Login'})],
-              });
 
+              const navigateAction = CommonActions.reset({
+                index: 0,
+                routes: [{name: 'Login'}],
+              });
               this.props.navigation.dispatch(navigateAction);
             } else {
               alert('Something went wrong. Unable to log out.');

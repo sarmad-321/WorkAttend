@@ -71,10 +71,10 @@ import {NativeBaseProvider} from 'native-base';
 import CompanyRegisterTxt from './components/CompanyRegisterTxt';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-// import History from "./components/HistoryPunch";
+import History from './components/HistoryPunch';
 import Profile from './components/Profile';
-// import Contact from "./components/Contact";
-// import Settings from "./components/Settings";
+import Contact from './components/Contact';
+import Settings from './components/Settings';
 import SideBar from './components/Sidebar';
 // import GeoFencing from "./components/GeoFencing";
 import Geolocation from '@react-native-community/geolocation';
@@ -95,11 +95,11 @@ const DrawerNavigator = () => {
         headerShown: false,
       }}>
       <Drawer.Screen name="Dashboard" component={Dashboard} />
-      {/* <Drawer.Screen name="GeoFencing" component={GeoFencing} />
-      <Drawer.Screen name="History" component={History} /> */}
+      {/* <Drawer.Screen name="GeoFencing" component={GeoFencing} /> */}
+      <Drawer.Screen name="History" component={History} />
       <Drawer.Screen name="Profile" component={Profile} />
-      {/* <Drawer.Screen name="Contact" component={Contact} />
-      <Drawer.Screen name="Settings" component={Settings} /> */}
+      <Drawer.Screen name="Contact" component={Contact} />
+      <Drawer.Screen name="Settings" component={Settings} />
     </Drawer.Navigator>
   );
 };

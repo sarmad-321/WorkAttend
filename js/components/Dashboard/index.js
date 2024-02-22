@@ -1572,13 +1572,17 @@ isLoading: false,}, () => {
                         {this.state.errorAttributeText}
                       </Text>
                       <Text
-                        style={styles.questionaireTopText}
-                        style={{textTransform: 'capitalize'}}>
+                        style={[
+                          styles.questionaireTopText,
+                          {textTransform: 'capitalize'},
+                        ]}>
                         {this.state.attributeName}
                       </Text>
                       <Text
-                        style={styles.questionaireTopText}
-                        style={{textTransform: 'capitalize'}}>
+                        style={[
+                          styles.questionaireTopText,
+                          {textTransform: 'capitalize'},
+                        ]}>
                         {this.state.attributeDescription}
                       </Text>
                       <ScrollView persistentScrollbar={true}>

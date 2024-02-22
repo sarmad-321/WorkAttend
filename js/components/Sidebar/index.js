@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, NetInfo, Linking, ImageBackground} from 'react-native';
+import {Image, NetInfo, Linking, ImageBackground, Alert} from 'react-native';
 import {
   Content,
   Text,
